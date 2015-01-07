@@ -30,6 +30,92 @@ class Alipay {
 		return self::$_instance;
 	}
 
+	/**
+	 * 即时收款
+	 * @param  [type] $data  id,title,price,intro,url,notify_url,return_url
+	 * @return [type]       [description]
+	 */
+	public static function create_direct_pay_by_user($data) {
+		$info = array(
+			'id' => '',
+			'title' => '',
+			'price' => '',
+			'url' => '',
+			'intro' => '',
+		);
+
+		$info = array_merge($info, $data);
+
+		$passParameters = array(
+			'service' => 'create_direct_pay_by_user', // 接口名称
+			"partner" => trim(self::$alipay_config['partner']), // 合作者id
+			'_input_charset' => self::$alipay_config['input_charset'], // 参数字符集
+			'sign_type' => 'MD5', // 默认
+			'notify_url' => self::$alipay_config['pay_notify'], // 通知地址
+			'return_url' => self::$alipay_config['pay_return'], // 回调地址
+			'error_notify_url' => '', // 错误 异步通知
+
+			'out_trade_no' => $info['id'], // 订单编号
+			'subject' => $info['title'], //商品名称
+			'payment_type' => 1, // 支付类型
+			'total_fee' => $info['price'], // 交易金额
+			'seller_id' => trim(self::$alipay_config['partner']), // 卖家支付宝号
+
+			'body' => $info['intro'], // 商品简介
+			'show_url' => $info['url'], // 商品显示url
+
+		);
+
+		return self::buildRequestForm($passParameters, 'post', '');
+	}
+
+	/**
+	 * 即时退款
+	 * @param  [array] $data  [['原付款支付宝交易号','退款总金额', '退款理由'],[]]
+	 * @return [type]       [description]
+	 */
+	public static function refund_fastpay_by_platform_pwd($data) {
+		// $info = array(
+		// 	'id' => '',
+		// 	'data' => array(),
+		// );
+
+		// $info = array_merge($info, $data);
+
+		$batch_no = date('Y-m-d') . str_replace('.', '', microtime(true));
+
+		$detail_arr = [];
+
+		foreach ($data as $item) {
+			if (!is_array($item)) {
+				continue;
+			}
+
+			$detail_arr[] = implode('^', $item);
+		}
+
+		$batch_num = count($detail_arr);
+
+		$detail_data = implode('#', $detail_arr);
+
+		$passParameters = array(
+			'service' => 'refund_fastpay_by_platform_pwd', // 接口名称
+			"partner" => trim(self::$alipay_config['partner']), // 合作者id
+			'_input_charset' => self::$alipay_config['input_charset'], // 参数字符集
+			'sign_type' => 'MD5', // 默认
+			'notify_url' => self::$alipay_config['refund_return'], // 通知地址
+			'error_notify_url' => '', // 错误 异步通知
+
+			'seller_user_id' => self::$alipay_config['partner'],
+			'refund_data' => date('Y-m-d H:i:s'),
+			'batch_no' => $batch_no,
+			'batch_num' => $batch_num,
+			'detail_data' => $detail_data,
+		);
+
+		return self::buildRequestForm($passParameters, 'post', '');
+	}
+
 	// function __construct($alipay_config) {
 	// 	$this->alipay_config = $alipay_config;
 	// }
