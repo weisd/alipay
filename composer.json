@@ -1,0 +1,20 @@
+{
+    "name": "weisd/alipay",
+    "description": "",
+    "authors": [
+        {
+            "name": "weisd",
+            "email": "weishidavip@163.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "illuminate/support": "4.2.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Weisd\\Alipay": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
