@@ -28,7 +28,7 @@ class AlipayServiceProvider extends ServiceProvider {
 	public function register() {
 		$app = $this->app;
 		$app['alipay'] = $app->share(function ($app) {
-			return new Alipay::instance();
+			return Alipay::instance();
 		});
 	}
 
